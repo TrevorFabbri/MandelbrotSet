@@ -1,125 +1,162 @@
+// Mandelbrot Project.cpp : This file contains the 'main' function. Program execution begins and ends there.
 #include "ComplexPlane.h"
 
 int main()
 {
-	// Get the screen resolution and create an SFML window
-	Vector2f resolution;
-	resolution.x = VideoMode::getDesktopMode().width;
-	resolution.y = VideoMode::getDesktopMode().height;
+    float height = VideoMode::getDesktopMode().height;
+    float width = VideoMode::getDesktopMode().width;
+    //Get desktop resolution and calculate monitor aspect ratio
+    float aspectRatio = height / width;
 
-	// Calculate the aspect ratio
-	float aspectRatio = (float)VideoMode::getDesktopMode().height / (float)VideoMode::getDesktopMode().width;
+    cout << "Desktop height : " << height << endl
+         << "Desktop width : " << width << endl;
 
-	// Construct the window
-	RenderWindow window(VideoMode(resolution.x, resolution.y), "Mandelbrot Set", Style::Default);
-	View mainView(FloatRect(0, 0, resolution.x, resolution.y));
+    //Create a video mode object
+    VideoMode vm(width, height);
 
-	// Construct an object of type complexPlane
-	complexPlane plane(aspectRatio);
+    //Create and open project window
+    RenderWindow window(vm, "Mandelbrot Set", Style::Default);
 
-	// Construct font and text objects
-	Font font;
-	font.loadFromFile("Montserrat.otf");
+    ///Construct object of type ComplexPlane w/ given aspectRatio.///
+    ComplexPlane userPlane(aspectRatio);
 
-	Text text;
-	text.setFont(font);
-	text.setCharacterSize(50);
-	text.setFillColor(Color::White);
-	text.setPosition(20, 20);
+    ///Construct Font and Text Objects///
+    //Font object
+    Font font;
+    font.loadFromFile("Arcade.ttf");
 
-	// Construct a vertex arra
-	VertexArray background;
-	background.setPrimitiveType(Points);
-	background.resize(resolution.x * resolution.y);
+    //Text Object
+    Text shownText;
+    shownText.setFont(font);
 
-	// Create an enum class state variable 
-	enum class State { CALCULATING, DISPLAYING };
-	State state = State::CALCULATING;
+    //Construct a VertexArray for drawing a color for each pixel
+    //Set its primitive type to Points
+    VertexArray coordArray(Points);
+    coordArray.setPrimitiveType(Points);
+    ///Resize it to screen width * height
+    coordArray.resize(height * width);
 
-	// The main loop
-	while (window.isOpen())
-	{
+    ///Create an enum class state variable with states CALCULATING and DISPLAYING
+    enum class State { CALCULATING, DISPLAYING };
 
-		/*
-		************
-		Handle input
-		************
-		*/
+    //Initialize to CALCULATING. set state back to DISPLAYING after done calculating a new complex plane view.
+    State currentState = State::CALCULATING;
 
-		Event event;
-		while (window.pollEvent(event))
-		{
-			// Handle the player quitting
-			if (Keyboard::isKeyPressed(Keyboard::Escape) || event.type == Event::Closed)
-			{
-				window.close();
-			}
+    double pixelWidth = width; 
 
-			if (event.type == Event::MouseButtonPressed)
-			{
-				if (event.mouseButton.button == Mouse::Left)
-				{
-					state = State::CALCULATING;
-					// Left click will zoom in and set new center of the complxePlane object
-					plane.setCenter(window.mapPixelToCoords(Mouse::getPosition(), mainView));
-					plane.zoomIn();
-				}
+    while (window.isOpen())
+    {
+        ////////////////////////////////////////////////////////////////////
+        //                          HANDLE INPUT
+        ////////////////////////////////////////////////////////////////////
 
-				if (event.mouseButton.button == Mouse::Right)
-				{
-					// Right click will zoom out and set new center of the complxePlane object
-					plane.setCenter(window.mapPixelToCoords(Mouse::getPosition(), mainView));
-					plane.zoomOut();
-				}
-			}
+        //Poll Windows queue events
+        Event event;
+        while (window.pollEvent(event))
+        {
+            //Handle (Event::Closed event) to {close the window}. Check if (Keyboard::isKeyPressed(Keyboard::Escape)) to {close the window}
+            if ((event.type == Event::Closed) || (event.type == Event::KeyPressed && Keyboard::isKeyPressed(Keyboard::Escape))) { window.close(); }
+            //Handle Event::MouseButtonPressed
+            if (event.type == Event::MouseButtonPressed)
+            {
+                //Get mouse pressed pixel location
+                Vector2i pixelPos;
+                pixelPos.x = event.mouseButton.x;
+                pixelPos.y = event.mouseButton.y;
 
-			if (event.type == Event::MouseMoved)
-			{
-				state = State::CALCULATING;
-				// setMouseLocation on the ComplexPlane object to store this coordinate
-				// This will be used later to display the mouse coordinates as it moves
-				plane.setMouseLocation(window.mapPixelToCoords(Mouse::getPosition(), mainView));
-			}
+                Vector2f coordPos = window.mapPixelToCoords(pixelPos, userPlane.getView());  // mapPixelToCoords to find Vector2f planePos in the ComplexPlane View based on the screen mouse click screenPos.
 
+                if (event.mouseButton.button == Mouse::Right)            // (Right click) will {zoomOut and setCenter of the ComplexPlane object}
+                {
+                    userPlane.zoomOut();
+                    userPlane.setCenter(coordPos);
+                }
+                else if (event.mouseButton.button == Mouse::Left)        // (Left click) will {zoomIn and setCenter of the ComplexPlane object}
+                {
+                    userPlane.zoomIn();
+                    userPlane.setCenter(coordPos);
+                }
+                currentState = State::CALCULATING;                       // Set the state to CALCULATING to generate the new complex plane view in the update segment
+            }
 
-		}// End event polling
+            //Handle Event::MouseMoved
+            if (event.type == Event::MouseMoved)
+            {
+                //Get mouse current pixel location as it moves.
+                Vector2i pixelPos;
+                pixelPos.x = event.mouseMove.x;
+                pixelPos.y = event.mouseMove.y;
 
-		/*
-		****************
-		UPDATE THE FRAME
-		****************
-		*/
+                Vector2f mousePos = window.mapPixelToCoords(pixelPos, userPlane.getView());  // mapPixelToCoords to find Vector2f mousePos in the ComplexPlane View based on the screen mouse active screenPos.
 
-		if (state == State::CALCULATING)
-		{
-			// j = x, i = y
-			for (int j = 0; j < resolution.y; j++)
-			{
-				for (int i = 0; i < resolution.x; i++)
-				{
-					// FIX THIS LATER, vvv   IDK WHAT VARIABLE REPLACES PIXELWIDTH from instructions
-					background[j + i * 1].position = { (float)j,(float)i };
-				}
-			}
-		}
+                //setMouseLocation on the ComplexPlane object to store this coordinate
+                userPlane.setMouseLocation(mousePos);
+            }
+        }
 
+        ////////////////////////////////////////////////////////////////////
+        //                          UPDATE SCENE
+        ////////////////////////////////////////////////////////////////////
 
-		state = State::DISPLAYING;
-		plane.loadText(text);
+        //If the state is CALCULATING
+        if (currentState == State::CALCULATING)
+        {
+            cout << "CALCULATING. . ." << endl;
 
-		/*
-		**************
-		Draw the scene
-		**************
-		*/
+            //Double for loop to loop through all pixels in the screen height and width
+            for (int j = 0; j < width; j++) //Use j for x ...
+            {
+                for (int i = 0; i < height; i++) // ... and i for y
+                {
+                    // Set the position variable in the element of VertexArray (coordArray) that corresponds to the screen coordinate j,i
+                    coordArray[j + (i * pixelWidth)].position = { (float)j, (float)i }; //Study vArray[j + i * pixelWidth].position = { (float)j,(float)i };
 
-		window.clear();
-		window.draw(background);
-		window.draw(text);
-		window.display();
+                    // Use mapPixelToCoords to find the Vector2f coordinate in the ComplexPlane View that corresponds to the screen pixel location at j,i
+                    Vector2i pixelLocation(j, i);
+                    Vector2f viewCoord = window.mapPixelToCoords(pixelLocation, userPlane.getView());
 
+                    // Call ComplexPlane::countIterations for the Vector2f coordinate in the ComplexPlane and store the number of iterations
+                    int coordIterations = userPlane.countIterations(viewCoord);
 
+                    // Declare three local Uint8 variables r, g, b to store the RGB values for the current pixel
+                    Uint8 r = 0; Uint8 g = 0; Uint8 b = 0;
 
-	}
-	return 0;
+                    // Pass the number of iterations and the RGB variables into ComplexPlane::iterationsToRGB. This will assign the RGB values by reference
+                    userPlane.iterationsToRGB(coordIterations, r, g, b);
+
+                    // Set the color variable in the element of VertexArray that corresponds to the screen coordinate j,i
+                    coordArray[j + (i * pixelWidth)].color = { r, g, b };
+                }
+            }
+            // Set the state to DISPLAYING
+            currentState = State::DISPLAYING;
+
+            cout << "DISPLAYING . . ." << endl;
+        }
+
+        //Call loadText from the ComplexPlane object
+        userPlane.loadText(shownText);
+
+        ////////////////////////////////////////////////////////////////////
+        //                           DRAW SCENE
+        ////////////////////////////////////////////////////////////////////
+
+        window.clear();
+        window.draw(coordArray);
+        window.draw(shownText);
+        window.display();
+    }
+
+    return 0;
 }
+
+// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
+// Debug program: F5 or Debug > Start Debugging menu
+
+// Tips for Getting Started: 
+//   1. Use the Solution Explorer window to add/manage files
+//   2. Use the Team Explorer window to connect to source control
+//   3. Use the Output window to see build output and other messages
+//   4. Use the Error List window to view errors
+//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
+//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
