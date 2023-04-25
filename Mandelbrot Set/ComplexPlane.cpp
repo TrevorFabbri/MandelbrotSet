@@ -3,6 +3,7 @@
 
 ComplexPlane::ComplexPlane(float Ratio)
 {
+	cout << "MAX_ITER set to: " << MAX_ITER << " Iterations" << endl;
 	m_aspectRatio = Ratio; //Store the Ratio into m_aspectRatio
 
 	m_view.setSize(BASE_WIDTH, (-BASE_HEIGHT) * m_aspectRatio); //(-) size invert vertical axis.
@@ -55,7 +56,7 @@ void ComplexPlane::setMouseLocation(Vector2f coord)
 void ComplexPlane::loadText(Text& text)
 {
 	stringstream ss;
-	ss << "Text works!!" << endl;
+	// << "Text works!!" << endl;
 	ss << "Mandelbrot Set" << endl
 		<< "Center: (" << m_view.getCenter().x << "," << m_view.getCenter().y << ")" << endl
 		<< "Cursor: (" <<  m_mouseLocation.x   << "," <<  m_mouseLocation.y   << ")" << endl
@@ -67,6 +68,7 @@ void ComplexPlane::loadText(Text& text)
 
 size_t ComplexPlane::countIterations(Vector2f coord)
 {
+	//				/*
 	size_t count = 0;
 
 	complex<float> c(coord.x, coord.y); //Center
@@ -81,6 +83,24 @@ size_t ComplexPlane::countIterations(Vector2f coord)
 	}
 
 	return count;
+
+	//				*/
+
+					/*
+	size_t i = 0;
+
+	complex<double> c(coord.x, coord.y);
+	complex<double> z(0, 0);
+	for (i = 0; i < MAX_ITER; i++)
+	{
+		z = z * z + c;
+		if (abs(z) >= 2.0)
+		{
+			return i-1;
+		}
+	}
+	return i;
+					*/
 }
 
 void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b)
@@ -90,55 +110,59 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b)
 	{r = 0; g = 0; b = 0;}
 	else if (count > (0.98 * MAX_ITER))	//UBER LEGENDARY
 	{
-		r = 0; g = 255; b = 0;
+		r = 220; g = 190; b = 150;
 	}
 	else if (count > (0.95 * MAX_ITER))	//VERY LEGENDARY
 	{
-		r = 0; g = 255; b = 64;
+		r = 160; g = 124; b = 120;
 	}
 	else if (count > (0.85 * MAX_ITER))	//LEGENDARY
 	{
-		r = 0; g = 255; b = 128;
+		r = 200; g = 200; b = 180;
 	}
 	else if (count > (0.8 * MAX_ITER))	//ULTRA
 	{
-		r = 0; g = 255; b = 187;
+		r = 255; g = 248; b = 210;
 	}
 	else if (count > (0.7 * MAX_ITER))	//SSR RANK
 	{
-		r = 0; g = 110; b = 255;
+		r = 240; g = 210; b = 150;
 	}
 	else if (count > (0.5 * MAX_ITER))	//SR RANK
 	{
-		r = 0; g = 0; b = 255;
+		r = 225; g = 170; b = 100;
 	}
 	else if (count > (0.4 * MAX_ITER))	//RARE
 	{
-		r = 115; g = 0; b = 255;
+		r = 218; g = 160; b = 40;
 	}
 	else if (count > (0.3 * MAX_ITER))	//GREAT
 	{
-		r = 175; g = 0; b = 222;
+		r = 180; g = 110; b = 32;
 	}
 	else if (count > (0.2 * MAX_ITER))	//UNCOMMON 
 	{
-		r = 255; g = 0; b = 175;
+		r = 150; g = 80; b = 26;
 	}
 	else if (count > (0.1 * MAX_ITER))	//COMMON RANK
 	{
-		r = 255; g = 0; b = 100;
+		r = 128; g = 45; b = 20;
 	}
 	else if (count > (0.05 * MAX_ITER))	//NORMY RANK
 	{
-		r = 255; g = 128; b = 180;
+		r = 64; g = 22; b = 16;
 	}
 	else if (count > (0.025 * MAX_ITER))	//MEH RANK
 	{
-		r = 255; g = 180; b = 205;
+		r = 32; g = 11; b = 8;
+	}
+	else if (count > ((0.025/2) * MAX_ITER))	//MEH RANK
+	{
+		r = 30; g = 7; b = 6;
 	}
 	else								//BAD RANK
 	{
-		r = 0; g = 215; b = 255;
+		r = 26; g = 4; b = 4;
 	}
 
 }
