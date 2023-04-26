@@ -81,31 +81,15 @@ size_t ComplexPlane::countIterations(Vector2f coord)
 
 		count++;
 	}
-
+	
 	return count;
 
-	//				*/
-
-					/*
-	size_t i = 0;
-
-	complex<double> c(coord.x, coord.y);
-	complex<double> z(0, 0);
-	for (i = 0; i < MAX_ITER; i++)
-	{
-		z = z * z + c;
-		if (abs(z) >= 2.0)
-		{
-			return i-1;
-		}
-	}
-	return i;
-					*/
 }
 
 void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b)
 {
-	//Using Professor's format:
+	//Basically, if iterationCount (count) = max iterations, make black,
+	// else its a gradient from bright yellow for high iterations to dark brown for low iterations
 	if (count >= MAX_ITER) //MAX ITERATIONS ARE BLACK
 	{r = 0; g = 0; b = 0;}
 	else if (count > (0.98 * MAX_ITER))	//UBER LEGENDARY
@@ -148,6 +132,10 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b)
 	{
 		r = 128; g = 45; b = 20;
 	}
+	else if (count > (0.075 * MAX_ITER))	//HRMMMM RANK
+	{
+		r = 96; g = 35; b = 18;
+	}
 	else if (count > (0.05 * MAX_ITER))	//NORMY RANK
 	{
 		r = 64; g = 22; b = 16;
@@ -156,9 +144,13 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b)
 	{
 		r = 32; g = 11; b = 8;
 	}
-	else if (count > ((0.025/2) * MAX_ITER))	//MEH RANK
+	else if (count > ((0.025/2) * MAX_ITER))	
 	{
 		r = 30; g = 7; b = 6;
+	}
+	else if (count > ((0.025 / 3) * MAX_ITER))	
+	{
+		r = 28; g = 6; b = 5;
 	}
 	else								//BAD RANK
 	{

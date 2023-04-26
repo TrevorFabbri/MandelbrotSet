@@ -4,6 +4,7 @@
 #include <complex>
 #include <iostream>
 #include <cmath>
+#include <thread>
 
 using namespace sf;
 using namespace std;
@@ -31,5 +32,5 @@ public:
 	void loadText(Text& text);					//Call to load a taken and referenced text
 	size_t countIterations(Vector2f coord);		//Call to take a coordinate and return an iteration count
 	void iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b);	//
-
+	
 };

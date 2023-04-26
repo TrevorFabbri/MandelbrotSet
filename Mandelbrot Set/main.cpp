@@ -8,6 +8,7 @@
 
 int main()
 {
+    
     float height = 1080;//VideoMode::getDesktopMode().height;
     float width = 1920;//VideoMode::getDesktopMode().width;
     //Get desktop resolution and calculate monitor aspect ratio
@@ -16,14 +17,13 @@ int main()
     cout << "Desktop height : " << height << endl
          << "Desktop width : " << width << endl;
 
-    
     ///Construct window///
 
        //Create a video mode object
     VideoMode vm(width, height);
 
         //Create and open project window
-    RenderWindow window(vm, "Mandelbrot Set", Style::Fullscreen);
+    RenderWindow window(vm, "Mandelbrot Set", Style::Default);
 
     ///Construct object of type ComplexPlane w/ given aspectRatio.///
     ComplexPlane userPlane(aspectRatio);
@@ -54,12 +54,8 @@ int main()
     State currentState = State::CALCULATING;
 
     //Variables to fiddle with
-        //bool to deide whether to take or not to take input
-        //bool takeInput = true;
     double pixelWidth = 1920; //aspectRatio / 500;
-    //Vector2f funnyNumber(-1.54368901269109, 0);
-    //userPlane.setCenter(funnyNumber);
-
+    
 
     while (window.isOpen())
     {
@@ -115,9 +111,6 @@ int main()
         ////////////////////////////////////////////////////////////////////
         //                          UPDATE SCENE
         ////////////////////////////////////////////////////////////////////
-
-
-        //int userPlane.getView().getSize().x
         
         //If the state is CALCULATING
         if (currentState == State::CALCULATING)
@@ -129,6 +122,7 @@ int main()
             {
                 for (int i = 0; i < height; i++) // ... and i for y
                 {
+
                     // Set the position variable in the element of VertexArray (coordArray) that corresponds to the screen coordinate j,i
                     coordArray[j + (i * pixelWidth)].position = { (float)j, (float)i }; //Study vArray[j + i * pixelWidth].position = { (float)j,(float)i };
 
@@ -147,6 +141,7 @@ int main()
 
                     // Set the color variable in the element of VertexArray that corresponds to the screen coordinate j,i
                     coordArray[j + (i * pixelWidth)].color = { r, g, b };
+
                 }
             }
             // Set the state to DISPLAYING
@@ -177,6 +172,7 @@ int main()
 
     return 0;
 }
+
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
