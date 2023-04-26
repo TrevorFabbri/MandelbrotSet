@@ -30,6 +30,5 @@ public:
 	void setMouseLocation(Vector2f coord);		//Call to set mouse location to a taken coordinate
 	void loadText(Text& text);					//Call to load a taken and referenced text
 	size_t countIterations(Vector2f coord);		//Call to take a coordinate and return an iteration count
-	void iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b);	//
-
+	void iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b);
 };

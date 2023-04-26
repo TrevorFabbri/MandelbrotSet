@@ -1,28 +1,21 @@
 // Mandelbrot Project.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-// ADDED THIS LINE HERE FOR TESTING
-//
-//Have issues with displaying the colours. Double check if the formula in .cpp works properly and what the correct pixelWidth SHOULD be.
-
 #include "ComplexPlane.h"
 
 int main()
 {
-    float height = 1080;//VideoMode::getDesktopMode().height;
-    float width = 1920;//VideoMode::getDesktopMode().width;
+    float height = VideoMode::getDesktopMode().height;
+    float width = VideoMode::getDesktopMode().width;
     //Get desktop resolution and calculate monitor aspect ratio
     float aspectRatio = height / width;
 
     cout << "Desktop height : " << height << endl
          << "Desktop width : " << width << endl;
-
     
     ///Construct window///
-
-       //Create a video mode object
+    //Create a video mode object
     VideoMode vm(width, height);
 
-        //Create and open project window
+    //Create and open project window
     RenderWindow window(vm, "Mandelbrot Set", Style::Fullscreen);
 
     ///Construct object of type ComplexPlane w/ given aspectRatio.///
@@ -41,7 +34,7 @@ int main()
     
     ///Construct a VertexArray for drawing a color for each pixel
     //Set its primitive type to Points
-    VertexArray coordArray(Points, 69);
+    VertexArray coordArray(Points);
     coordArray.setPrimitiveType(Points);
 
     ///Resize it to screen width * height
@@ -53,13 +46,7 @@ int main()
     //Initialize to CALCULATING. set state back to DISPLAYING after done calculating a new complex plane view.
     State currentState = State::CALCULATING;
 
-    //Variables to fiddle with
-        //bool to deide whether to take or not to take input
-        //bool takeInput = true;
-    double pixelWidth = 1920; //aspectRatio / 500;
-    //Vector2f funnyNumber(-1.54368901269109, 0);
-    //userPlane.setCenter(funnyNumber);
-
+    double pixelWidth = width; 
 
     while (window.isOpen())
     {
@@ -111,14 +98,10 @@ int main()
             }
         }
 
-
         ////////////////////////////////////////////////////////////////////
         //                          UPDATE SCENE
         ////////////////////////////////////////////////////////////////////
 
-
-        //int userPlane.getView().getSize().x
-        
         //If the state is CALCULATING
         if (currentState == State::CALCULATING)
         {
@@ -154,24 +137,16 @@ int main()
 
             cout << "DISPLAYING . . ." << endl;
         }
-
-        
-
         //Call loadText from the ComplexPlane object
         userPlane.loadText(shownText);
-
-
 
         ////////////////////////////////////////////////////////////////////
         //                           DRAW SCENE
         ////////////////////////////////////////////////////////////////////
 
         window.clear();
-
-      
         window.draw(coordArray);
-        window.draw(shownText);
-        
+        window.draw(shownText);       
         window.display();
     }
 

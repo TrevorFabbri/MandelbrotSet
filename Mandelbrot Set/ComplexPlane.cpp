@@ -19,7 +19,6 @@ void ComplexPlane::zoomIn()
 	float l_y = BASE_HEIGHT * m_aspectRatio * pow(BASE_ZOOM, m_zoomCount);
 
 	m_view.setSize(l_x, l_y);
-	//m_view.zoom();
 
 	//Console Check
 	cout << "Zoomed In!" << endl
@@ -33,7 +32,6 @@ void ComplexPlane::zoomOut()
 	float l_y = BASE_HEIGHT * m_aspectRatio * pow(BASE_ZOOM, m_zoomCount);
 
 	m_view.setSize(l_x, l_y);
-	//m_view.zoom();
 
 	//Console Check
 	cout << "Zoomed Out!" << endl
@@ -83,24 +81,6 @@ size_t ComplexPlane::countIterations(Vector2f coord)
 	}
 
 	return count;
-
-	//				*/
-
-					/*
-	size_t i = 0;
-
-	complex<double> c(coord.x, coord.y);
-	complex<double> z(0, 0);
-	for (i = 0; i < MAX_ITER; i++)
-	{
-		z = z * z + c;
-		if (abs(z) >= 2.0)
-		{
-			return i-1;
-		}
-	}
-	return i;
-					*/
 }
 
 void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b)
