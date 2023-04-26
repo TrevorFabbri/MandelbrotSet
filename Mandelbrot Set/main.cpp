@@ -1,6 +1,6 @@
 // Mandelbrot Project.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
+// ADDED THIS LINE HERE FOR TESTING
 //
 //Have issues with displaying the colours. Double check if the formula in .cpp works properly and what the correct pixelWidth SHOULD be.
 
